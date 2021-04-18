@@ -13,11 +13,11 @@ async function run(): Promise<void> {
     const octokit = github.getOctokit(githubToken)
 
     core.info(`__dirname: ${__dirname}`)
-    await fs.copyFile(
-      `${__dirname}/../browsers.json`,
-      `${__dirname}/browsers.json`
-    )
-    core.info(`Copied file successfully`)
+    // await fs.copyFile(
+    //   `${__dirname}/../browsers.json`,
+    //   `${__dirname}/browsers.json`
+    // )
+    // core.info(`Copied file successfully`)
 
     const latestReleaseScreenshot = await takeScreenshot(url)
 

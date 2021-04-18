@@ -13,4 +13,4 @@ inputs:
     description: 'Url of the site to take a screenshot of'
 runs:
   using: 'node12'
-  main: 'lib/main.js'
+  main: 'dist/index.js'

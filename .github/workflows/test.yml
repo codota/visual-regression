@@ -21,6 +21,4 @@ jobs:
       - run: |
           yarn lint
       - run: |
-          yarn package
-      - run: |
           yarn test --passWithNoTests
