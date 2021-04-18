@@ -1,16 +1,40 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import github from '@actions/github'
+import slackMessage from './slackMessage'
+import takeScreenshot from './takeScreenshot'
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
+    const {owner, repo} = github.context.repo
+    const slackWebhook: string = core.getInput('slackWebhook')
+    const githubToken = core.getInput('githubToken')
+    const url = core.getInput('url')
+    const octokit = github.getOctokit(githubToken)
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const latestReleaseScreenshot = await takeScreenshot(url)
 
-    core.setOutput('time', new Date().toTimeString())
+    const [latest, previous] = (
+      await octokit.repos.listReleases({owner, repo})
+    ).data.filter(({draft, prerelease}) => !draft && !prerelease)
+
+    const latestReleaseVersion = latest.tag_name.replace('v', '')
+    const previousReleaseVersion = previous.tag_name.replace('v', '')
+
+    await octokit.repos.uploadReleaseAsset({
+      owner,
+      repo,
+      release_id: latest.id,
+      name: `screenshot-${url}.png`,
+      data: latestReleaseScreenshot.toString()
+    })
+
+    await slackMessage(
+      slackWebhook,
+      latestReleaseVersion,
+      previousReleaseVersion,
+      `https://github.com/${owner}/${repo}/releases/download/v${latestReleaseVersion}/screenshot-${url}.png`,
+      `https://github.com/${owner}/${repo}/releases/download/v${previousReleaseVersion}/screenshot-${url}.png`
+    )
   } catch (error) {
     core.setFailed(error.message)
   }

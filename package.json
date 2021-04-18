@@ -25,7 +25,11 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.6"
+    "@actions/artifact": "^0.5.1",
+    "@actions/core": "^1.2.6",
+    "@actions/github": "^4.0.0",
+    "@slack/webhook": "^6.0.0",
+    "playwright": "^1.10.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
