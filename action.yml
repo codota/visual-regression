@@ -4,7 +4,7 @@ author: 'Your name or organization here'
 inputs:
   githubToken:
     required: true
-    description: 'Github token - use `${{ secrets.GITHUB_TOKEN }}`'
+    description: 'Github token - use `\${{ secrets.GITHUB_TOKEN }}`'
   slackWebhook:
     required: true
     description: 'Slack webhook'
