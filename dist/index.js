@@ -51,6 +51,7 @@ const core = __importStar(__webpack_require__(2186));
 const github_1 = __importDefault(__webpack_require__(5438));
 const slackMessage_1 = __importDefault(__webpack_require__(9153));
 const takeScreenshot_1 = __importDefault(__webpack_require__(8865));
+const promises_1 = __importDefault(__webpack_require__(9225));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -59,6 +60,9 @@ function run() {
             const githubToken = core.getInput('githubToken');
             const url = core.getInput('url');
             const octokit = github_1.default.getOctokit(githubToken);
+            core.info(`__dirname: ${__dirname}`);
+            yield promises_1.default.copyFile(`${__dirname}/../browsers.json`, `${__dirname}/browsers.json`);
+            core.info(`Copied file successfully`);
             const latestReleaseScreenshot = yield takeScreenshot_1.default(url);
             const [latest, previous] = (yield octokit.repos.listReleases({ owner, repo })).data.filter(({ draft, prerelease }) => !draft && !prerelease);
             const latestReleaseVersion = latest.tag_name.replace('v', '');
@@ -53577,6 +53581,14 @@ module.exports = require("events");;
 
 "use strict";
 module.exports = require("fs");;
+
+/***/ }),
+
+/***/ 9225:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs/promises");;
 
 /***/ }),
 
