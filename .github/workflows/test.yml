@@ -13,6 +13,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-          yarn
+          yarn --frozen-lockfile
       - run: |
-          yarn all
+          yarn build
+      - run: |
+          yarn format-check
+      - run: |
+          yarn lint
+      - run: |
+          yarn package
+      - run: |
+          yarn test --passWithNoTests
