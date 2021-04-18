@@ -2,10 +2,15 @@ name: 'Your name here'
 description: 'Provide a description here'
 author: 'Your name or organization here'
 inputs:
-  milliseconds: # change this
+  githubToken:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'Github token - use `${{ secrets.GITHUB_TOKEN }}`'
+  slackWebhook:
+    required: true
+    description: 'Slack webhook'
+  url:
+    required: true
+    description: 'Url of the site to take a screenshot of'
 runs:
   using: 'node12'
   main: 'dist/index.js'
