@@ -10,6 +10,148 @@ module.exports = JSON.parse("{\"name\":\"@slack/webhook\",\"version\":\"6.0.0\",
 
 /***/ }),
 
+/***/ 2399:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__webpack_require__(2186));
+const axios_1 = __importDefault(__webpack_require__(6545));
+const fs_1 = __importDefault(__webpack_require__(5747));
+const pixelmatch_1 = __importDefault(__webpack_require__(6097));
+const pngjs_1 = __webpack_require__(6413);
+const diffFileName_1 = __importDefault(__webpack_require__(6232));
+const imageUrl_1 = __importDefault(__webpack_require__(7003));
+const uploadImageToRelease_1 = __importDefault(__webpack_require__(6935));
+function createReleasesDiff(octokit, latestReleaseId, previousReleaseVersion, screenshotFileName) {
+    return __awaiter(this, void 0, void 0, function* () {
+        core.info(`Downloading previous release screenshot from: ${imageUrl_1.default(previousReleaseVersion, screenshotFileName)}`);
+        const { data: previousVersionScreenshot } = yield axios_1.default.get(imageUrl_1.default(previousReleaseVersion, screenshotFileName), {
+            responseType: 'arraybuffer'
+        });
+        core.info(`Creating diff between latest version and previous version`);
+        const { width, height, data: latestScreenshotPngData } = pngjs_1.PNG.sync.read(fs_1.default.readFileSync(screenshotFileName));
+        const previousScreenshotPng = pngjs_1.PNG.sync.read(Buffer.from(previousVersionScreenshot, 'binary'));
+        const diff = new pngjs_1.PNG({ width, height });
+        pixelmatch_1.default(latestScreenshotPngData, previousScreenshotPng.data, diff.data, width, height, {
+            threshold: 0.01
+        });
+        const diffFile = diffFileName_1.default(screenshotFileName);
+        core.info(`Writing diff mask as image to ${diffFile}`);
+        fs_1.default.writeFileSync(diffFile, pngjs_1.PNG.sync.write(diff));
+        core.info(`Uploading diff mask as image to latest release`);
+        yield uploadImageToRelease_1.default({
+            octokit,
+            release_id: latestReleaseId,
+            name: diffFile,
+            filepath: diffFile
+        });
+    });
+}
+exports.default = createReleasesDiff;
+
+
+/***/ }),
+
+/***/ 6232:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+function diffFileName(fileName) {
+    return `diff-${fileName}.png`;
+}
+exports.default = diffFileName;
+
+
+/***/ }),
+
+/***/ 5932:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const github = __importStar(__webpack_require__(5438));
+function findLatestReleases(octokit) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { owner, repo } = github.context.repo;
+        const [latest, previous] = (yield octokit.repos.listReleases({ owner, repo })).data.filter(({ draft, prerelease }) => !draft && !prerelease);
+        const latestReleaseVersion = latest.tag_name.replace('v', '');
+        const previousReleaseVersion = previous === null || previous === void 0 ? void 0 : previous.tag_name.replace('v', '');
+        return {
+            latestReleaseVersion,
+            previousReleaseVersion,
+            latestReleaseId: latest.id
+        };
+    });
+}
+exports.default = findLatestReleases;
+
+
+/***/ }),
+
 /***/ 7003:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
@@ -88,10 +230,8 @@ const imageUrl_1 = __importDefault(__webpack_require__(7003));
 const slackMessage_1 = __importDefault(__webpack_require__(9153));
 const takeScreenshot_1 = __importDefault(__webpack_require__(8865));
 const uploadImageToRelease_1 = __importDefault(__webpack_require__(6935));
-const fs_1 = __importDefault(__webpack_require__(5747));
-const pngjs_1 = __webpack_require__(6413);
-const pixelmatch_1 = __importDefault(__webpack_require__(6097));
-const axios_1 = __importDefault(__webpack_require__(6545));
+const createReleasesDiff_1 = __importDefault(__webpack_require__(2399));
+const findLatestReleases_1 = __importDefault(__webpack_require__(5932));
 const SCREENSHOT_FILE_NAME = 'screenshot';
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -100,43 +240,27 @@ function run() {
             const slackWebhook = core.getInput('slackWebhook');
             const githubToken = core.getInput('githubToken');
             const url = core.getInput('url');
+            const screenshotFileNameRaw = core.getInput('screenshotFilename') || SCREENSHOT_FILE_NAME;
             const octokit = github.getOctokit(githubToken);
-            const screenshot_file_name = `${SCREENSHOT_FILE_NAME}.png`;
-            yield takeScreenshot_1.default(url, screenshot_file_name);
+            const screenshotFileName = `${screenshotFileNameRaw}.png`;
+            yield takeScreenshot_1.default(url, screenshotFileName);
             core.info(`Fetching releases for ${owner}/${repo}`);
-            const [latest, previous] = (yield octokit.repos.listReleases({ owner, repo })).data.filter(({ draft, prerelease }) => !draft && !prerelease);
-            const latestReleaseVersion = latest.tag_name.replace('v', '');
-            const previousReleaseVersion = previous === null || previous === void 0 ? void 0 : previous.tag_name.replace('v', '');
+            const { latestReleaseVersion, previousReleaseVersion, latestReleaseId } = yield findLatestReleases_1.default(octokit);
             core.info(`Receieved Releases. Latest is ${latestReleaseVersion} and previous is ${previousReleaseVersion}`);
             yield uploadImageToRelease_1.default({
                 octokit,
-                release_id: latest.id,
-                name: screenshot_file_name,
-                filepath: screenshot_file_name
+                release_id: latestReleaseId,
+                name: screenshotFileName,
+                filepath: screenshotFileName
             });
-            const latestReleaseScreenshot = imageUrl_1.default(latestReleaseVersion, screenshot_file_name);
-            const previousReleaseScreenshot = imageUrl_1.default(previousReleaseVersion, screenshot_file_name);
-            core.info(`Uploaded screenshot as a release asset to v${latestReleaseVersion}. Download url is: ${latestReleaseScreenshot}`);
-            core.info(`Downloading previous release screenshot from: ${previousReleaseScreenshot}`);
-            const { data: previousVersionScreenshot } = yield axios_1.default.get(previousReleaseScreenshot, {
-                responseType: 'arraybuffer'
-            });
-            core.info(`Creating diff between latest version and previous version`);
-            const img1 = pngjs_1.PNG.sync.read(fs_1.default.readFileSync(screenshot_file_name));
-            const img2 = pngjs_1.PNG.sync.read(Buffer.from(previousVersionScreenshot, 'binary'));
-            const { width, height } = img1;
-            const diff = new pngjs_1.PNG({ width, height });
-            pixelmatch_1.default(img1.data, img2.data, diff.data, width, height, { threshold: 0.1 });
-            const diffFileName = `diff-${SCREENSHOT_FILE_NAME}.png`;
-            core.info(`Writing diff mask as image to ${diffFileName}`);
-            fs_1.default.writeFileSync(diffFileName, pngjs_1.PNG.sync.write(diff));
-            yield uploadImageToRelease_1.default({
-                octokit,
-                release_id: latest.id,
-                name: diffFileName,
-                filepath: diffFileName
-            });
-            yield slackMessage_1.default(slackWebhook, latestReleaseVersion, previousReleaseVersion, latestReleaseScreenshot, previousReleaseScreenshot, imageUrl_1.default(latestReleaseVersion, diffFileName));
+            core.info(`Uploaded screenshot as a release asset to v${latestReleaseVersion}. Download url is: ${imageUrl_1.default(latestReleaseVersion, screenshotFileName)}`);
+            if (!previousReleaseVersion) {
+                core.warning('Did not find previous releases, stopping here.');
+                return;
+            }
+            yield createReleasesDiff_1.default(octokit, latestReleaseId, previousReleaseVersion, screenshotFileName);
+            core.info(`Uploaded diff mask as image to latest release`);
+            yield slackMessage_1.default(slackWebhook, latestReleaseVersion, previousReleaseVersion, screenshotFileName);
             core.info(`Sent Slack message successfully.`);
         }
         catch (error) {
@@ -182,10 +306,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__webpack_require__(2186));
 const webhook_1 = __webpack_require__(1095);
-function slackMessage(slackWebhook, latestReleaseVersion, previousReleaseVersion, latestReleaseScreenshot, previousReleaseScreenshot, diffScreenshot) {
+const diffFileName_1 = __importDefault(__webpack_require__(6232));
+const imageUrl_1 = __importDefault(__webpack_require__(7003));
+function slackMessage(slackWebhook, latestReleaseVersion, previousReleaseVersion, screenshotFileName) {
     return __awaiter(this, void 0, void 0, function* () {
         const webhook = new webhook_1.IncomingWebhook(slackWebhook);
         core.info(`Posting to slack using IncomingWebhook`);
@@ -212,7 +341,7 @@ function slackMessage(slackWebhook, latestReleaseVersion, previousReleaseVersion
                         text: `v${latestReleaseVersion}`,
                         emoji: true
                     },
-                    image_url: latestReleaseScreenshot,
+                    image_url: imageUrl_1.default(latestReleaseVersion, screenshotFileName),
                     alt_text: `Version ${latestReleaseVersion}`
                 },
                 {
@@ -229,7 +358,7 @@ function slackMessage(slackWebhook, latestReleaseVersion, previousReleaseVersion
                         text: `v${previousReleaseVersion}`,
                         emoji: true
                     },
-                    image_url: previousReleaseScreenshot,
+                    image_url: imageUrl_1.default(previousReleaseVersion, screenshotFileName),
                     alt_text: `Version ${previousReleaseVersion}`
                 },
                 {
@@ -246,7 +375,7 @@ function slackMessage(slackWebhook, latestReleaseVersion, previousReleaseVersion
                         text: `Diff mask`,
                         emoji: true
                     },
-                    image_url: diffScreenshot,
+                    image_url: imageUrl_1.default(latestReleaseVersion, diffFileName_1.default(screenshotFileName)),
                     alt_text: `Difference mask`
                 }
             ]

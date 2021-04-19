@@ -1,6 +1,6 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Visual Regression'
+description: 'Check visual regressions after a release'
+author: 'boaz@tabnine.com'
 inputs:
   githubToken:
     required: true
@@ -11,6 +11,9 @@ inputs:
   url:
     required: true
     description: 'Url of the site to take a screenshot of'
+  screenshotFilename:
+    required: false
+    description: 'Name of the screenshot file'
 runs:
   using: 'node12'
   main: 'dist/index.js'

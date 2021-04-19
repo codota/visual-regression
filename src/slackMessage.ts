@@ -1,13 +1,13 @@
 import * as core from '@actions/core'
 import {IncomingWebhook} from '@slack/webhook'
+import diffFileName from './diffFileName'
+import imageUrl from './imageUrl'
 
 export default async function slackMessage(
   slackWebhook: string,
   latestReleaseVersion: string,
   previousReleaseVersion: string,
-  latestReleaseScreenshot: string,
-  previousReleaseScreenshot: string,
-  diffScreenshot: string
+  screenshotFileName: string
 ): Promise<void> {
   const webhook = new IncomingWebhook(slackWebhook)
 
@@ -35,7 +35,7 @@ export default async function slackMessage(
           text: `v${latestReleaseVersion}`,
           emoji: true
         },
-        image_url: latestReleaseScreenshot,
+        image_url: imageUrl(latestReleaseVersion, screenshotFileName),
         alt_text: `Version ${latestReleaseVersion}`
       },
       {
@@ -52,7 +52,7 @@ export default async function slackMessage(
           text: `v${previousReleaseVersion}`,
           emoji: true
         },
-        image_url: previousReleaseScreenshot,
+        image_url: imageUrl(previousReleaseVersion, screenshotFileName),
         alt_text: `Version ${previousReleaseVersion}`
       },
       {
@@ -69,7 +69,10 @@ export default async function slackMessage(
           text: `Diff mask`,
           emoji: true
         },
-        image_url: diffScreenshot,
+        image_url: imageUrl(
+          latestReleaseVersion,
+          diffFileName(screenshotFileName)
+        ),
         alt_text: `Difference mask`
       }
     ]
