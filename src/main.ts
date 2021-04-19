@@ -20,12 +20,18 @@ async function run(): Promise<void> {
 
     const latestReleaseScreenshot = await takeScreenshot(url)
 
+    core.info(`Took screenshot`)
+
     const [latest, previous] = (
       await octokit.repos.listReleases({owner, repo})
     ).data.filter(({draft, prerelease}) => !draft && !prerelease)
 
     const latestReleaseVersion = latest.tag_name.replace('v', '')
     const previousReleaseVersion = previous.tag_name.replace('v', '')
+
+    core.info(
+      `Receieved Releases. Latest is ${latestReleaseVersion} and previous is ${previousReleaseVersion}`
+    )
 
     await octokit.repos.uploadReleaseAsset({
       owner,
@@ -35,6 +41,10 @@ async function run(): Promise<void> {
       data: latestReleaseScreenshot.toString()
     })
 
+    core.info(
+      `Uploaded screenshot as a release asset to v${latestReleaseVersion}`
+    )
+
     await slackMessage(
       slackWebhook,
       latestReleaseVersion,
@@ -42,6 +52,7 @@ async function run(): Promise<void> {
       `https://github.com/${owner}/${repo}/releases/download/v${latestReleaseVersion}/screenshot-${url}.png`,
       `https://github.com/${owner}/${repo}/releases/download/v${previousReleaseVersion}/screenshot-${url}.png`
     )
+    core.info(`Sent Slack message successfully.`)
   } catch (error) {
     core.setFailed(error.message)
   }
