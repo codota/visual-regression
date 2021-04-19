@@ -117,6 +117,7 @@ function run() {
             const latestReleaseScreenshot = imageUrl_1.default(latestReleaseVersion, screenshot_file_name);
             const previousReleaseScreenshot = imageUrl_1.default(previousReleaseVersion, screenshot_file_name);
             core.info(`Uploaded screenshot as a release asset to v${latestReleaseVersion}. Download url is: ${latestReleaseScreenshot}`);
+            core.info(`Downloading previous release screenshot from: ${previousReleaseScreenshot}`);
             const { data: previousVersionScreenshot } = yield axios_1.default.get(previousReleaseScreenshot, {
                 responseType: 'arraybuffer'
             });

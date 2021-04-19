@@ -56,6 +56,9 @@ async function run(): Promise<void> {
       `Uploaded screenshot as a release asset to v${latestReleaseVersion}. Download url is: ${latestReleaseScreenshot}`
     )
 
+    core.info(
+      `Downloading previous release screenshot from: ${previousReleaseScreenshot}`
+    )
     const {data: previousVersionScreenshot} = await axios.get(
       previousReleaseScreenshot,
       {
