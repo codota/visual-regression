@@ -33,23 +33,23 @@ async function run(): Promise<void> {
       `Receieved Releases. Latest is ${latestReleaseVersion} and previous is ${previousReleaseVersion}`
     )
 
-    await octokit.repos.uploadReleaseAsset({
+    const uploadedAsset = await octokit.repos.uploadReleaseAsset({
       owner,
       repo,
       release_id: latest.id,
       name: `screenshot-${url}.png`,
-      data: latestReleaseScreenshot.toString()
+      data: latestReleaseScreenshot.toString('binary')
     })
 
     core.info(
-      `Uploaded screenshot as a release asset to v${latestReleaseVersion}`
+      `Uploaded screenshot as a release asset to v${latestReleaseVersion}. Download url is: ${uploadedAsset.data.browser_download_url}`
     )
 
     await slackMessage(
       slackWebhook,
       latestReleaseVersion,
       previousReleaseVersion,
-      `https://github.com/${owner}/${repo}/releases/download/v${latestReleaseVersion}/screenshot-${url}.png`,
+      uploadedAsset.data.browser_download_url,
       `https://github.com/${owner}/${repo}/releases/download/v${previousReleaseVersion}/screenshot-${url}.png`
     )
     core.info(`Sent Slack message successfully.`)

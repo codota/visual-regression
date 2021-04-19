@@ -71,15 +71,15 @@ function run() {
             const latestReleaseVersion = latest.tag_name.replace('v', '');
             const previousReleaseVersion = previous.tag_name.replace('v', '');
             core.info(`Receieved Releases. Latest is ${latestReleaseVersion} and previous is ${previousReleaseVersion}`);
-            yield octokit.repos.uploadReleaseAsset({
+            const uploadedAsset = yield octokit.repos.uploadReleaseAsset({
                 owner,
                 repo,
                 release_id: latest.id,
                 name: `screenshot-${url}.png`,
-                data: latestReleaseScreenshot.toString()
+                data: latestReleaseScreenshot.toString('binary')
             });
-            core.info(`Uploaded screenshot as a release asset to v${latestReleaseVersion}`);
-            yield slackMessage_1.default(slackWebhook, latestReleaseVersion, previousReleaseVersion, `https://github.com/${owner}/${repo}/releases/download/v${latestReleaseVersion}/screenshot-${url}.png`, `https://github.com/${owner}/${repo}/releases/download/v${previousReleaseVersion}/screenshot-${url}.png`);
+            core.info(`Uploaded screenshot as a release asset to v${latestReleaseVersion}. Download url is: ${uploadedAsset.data.browser_download_url}`);
+            yield slackMessage_1.default(slackWebhook, latestReleaseVersion, previousReleaseVersion, uploadedAsset.data.browser_download_url, `https://github.com/${owner}/${repo}/releases/download/v${previousReleaseVersion}/screenshot-${url}.png`);
             core.info(`Sent Slack message successfully.`);
         }
         catch (error) {
@@ -97,6 +97,25 @@ run();
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -106,11 +125,64 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const webhook_1 = __webpack_require__(1095);
+const axios_1 = __importDefault(__webpack_require__(6545));
+const core = __importStar(__webpack_require__(2186));
 function slackMessage(slackWebhook, latestReleaseVersion, previousReleaseVersion, latestReleaseScreenshot, previousReleaseScreenshot) {
     return __awaiter(this, void 0, void 0, function* () {
+        core.info(`Posting to slack at ${slackWebhook.slice(0, 10)}...`);
+        yield axios_1.default.post(slackWebhook, {
+            blocks: [
+                {
+                    type: 'section',
+                    text: {
+                        type: 'mrkdwn',
+                        text: '*Visual Comparison*'
+                    }
+                },
+                {
+                    type: 'section',
+                    text: {
+                        type: 'mrkdwn',
+                        text: '*Released Version*'
+                    }
+                },
+                {
+                    type: 'image',
+                    title: {
+                        type: 'plain_text',
+                        text: `v${latestReleaseVersion}`,
+                        emoji: true
+                    },
+                    image_url: latestReleaseScreenshot,
+                    alt_text: `Version ${latestReleaseVersion}`
+                },
+                {
+                    type: 'section',
+                    text: {
+                        type: 'mrkdwn',
+                        text: '*Previous Version*'
+                    }
+                },
+                {
+                    type: 'image',
+                    title: {
+                        type: 'plain_text',
+                        text: `v${previousReleaseVersion}`,
+                        emoji: true
+                    },
+                    image_url: previousReleaseScreenshot,
+                    alt_text: `Version ${previousReleaseVersion}`
+                }
+            ]
+        });
+        core.info(`Creating IncomingWebhook`);
         const webhook = new webhook_1.IncomingWebhook(slackWebhook);
+        core.info(`Posting to slack using IncomingWebhook`);
         yield webhook.send({
             blocks: [
                 {
