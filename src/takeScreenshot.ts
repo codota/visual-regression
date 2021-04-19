@@ -1,6 +1,6 @@
 import os from 'os'
 import path from 'path'
-import puppeteer from 'puppeteer'
+import puppeteer from 'puppeteer-core'
 
 export default async function takeScreenshot(url: string): Promise<Buffer> {
   const browser = await puppeteer.launch({executablePath: getChromePath()})

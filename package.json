@@ -9,7 +9,7 @@
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
-    "package": "ncc build --source-map --license licenses.txt",
+    "package": "yarn build && ncc build --source-map --license licenses.txt",
     "test": "jest"
   },
   "repository": {
@@ -28,7 +28,7 @@
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
     "@slack/webhook": "^6.0.0",
-    "puppeteer": "^8.0.0"
+    "puppeteer-core": "^8.0.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
