@@ -28,12 +28,12 @@
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
     "@slack/webhook": "^6.0.0",
-    "@types/axios": "^0.14.0",
-    "axios": "^0.21.1",
+    "mime": "^2.5.2",
     "puppeteer-core": "^8.0.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
+    "@types/mime": "^2.0.3",
     "@types/node": "^14.14.9",
     "@typescript-eslint/parser": "^4.8.1",
     "@vercel/ncc": "^0.25.1",

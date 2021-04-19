@@ -2,6 +2,10 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import slackMessage from './slackMessage'
 import takeScreenshot from './takeScreenshot'
+import {getType} from 'mime'
+import fs from 'fs/promises'
+
+const SCREENSHOT_TEMP_FILE_PATH = 'screenshot.png'
 
 async function run(): Promise<void> {
   try {
@@ -18,7 +22,7 @@ async function run(): Promise<void> {
     // )
     // core.info(`Copied file successfully`)
 
-    const latestReleaseScreenshot = await takeScreenshot(url)
+    await takeScreenshot(url, SCREENSHOT_TEMP_FILE_PATH)
 
     core.info(`Took screenshot`)
 
@@ -33,13 +37,26 @@ async function run(): Promise<void> {
       `Receieved Releases. Latest is ${latestReleaseVersion} and previous is ${previousReleaseVersion}`
     )
 
+    const fileMime =
+      getType(SCREENSHOT_TEMP_FILE_PATH) || 'application/octet-stream'
+    const charset: 'utf-8' | null =
+      fileMime.indexOf('text') > -1 ? 'utf-8' : null
+
+    const headers = {
+      'content-type': fileMime,
+      'content-length': (await fs.stat(SCREENSHOT_TEMP_FILE_PATH)).size
+    }
+
     const uploadedAsset = await octokit.repos.uploadReleaseAsset({
       owner,
       repo,
       release_id: latest.id,
+      headers,
       name: `screenshot.png`,
-      data: 'placeholder',
-      file: latestReleaseScreenshot
+      data: ((await fs.readFile(
+        SCREENSHOT_TEMP_FILE_PATH,
+        charset
+      )) as unknown) as string
     })
 
     core.info(
