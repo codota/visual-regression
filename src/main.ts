@@ -4,8 +4,10 @@ import imageUrl from './imageUrl'
 import slackMessage from './slackMessage'
 import takeScreenshot from './takeScreenshot'
 import uploadImageToRelease from './uploadImageToRelease'
-import {compareImages} from 'resemblejs'
 import fs from 'fs'
+import {PNG} from 'pngjs'
+import pixelmatch from 'pixelmatch'
+import axios from 'axios'
 
 const SCREENSHOT_FILE_NAME = 'screenshot'
 
@@ -54,17 +56,23 @@ async function run(): Promise<void> {
       `Uploaded screenshot as a release asset to v${latestReleaseVersion}. Download url is: ${latestReleaseScreenshot}`
     )
 
-    core.info(`Creating diff between latest version and previous version`)
-    const diff = await compareImages(
-      fs.readFileSync(latestReleaseScreenshot),
-      fs.readFileSync(previousReleaseScreenshot),
-      {}
+    const {data: previousVersionScreenshot} = await axios.get(
+      previousReleaseScreenshot,
+      {
+        responseType: 'arraybuffer'
+      }
     )
 
-    const diffFileName = `diff-${SCREENSHOT_FILE_NAME}.png`
+    core.info(`Creating diff between latest version and previous version`)
+    const img1 = PNG.sync.read(fs.readFileSync(screenshot_file_name))
+    const img2 = PNG.sync.read(Buffer.from(previousVersionScreenshot, 'binary'))
+    const {width, height} = img1
+    const diff = new PNG({width, height})
+    pixelmatch(img1.data, img2.data, diff.data, width, height, {threshold: 0.1})
 
+    const diffFileName = `diff-${SCREENSHOT_FILE_NAME}.png`
     core.info(`Writing diff mask as image to ${diffFileName}`)
-    fs.writeFileSync(diffFileName, diff.getBuffer())
+    fs.writeFileSync(diffFileName, PNG.sync.write(diff))
 
     await uploadImageToRelease({
       octokit,

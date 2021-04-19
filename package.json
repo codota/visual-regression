@@ -28,15 +28,19 @@
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
     "@slack/webhook": "^6.0.0",
+    "axios": "^0.21.1",
     "mime": "^2.5.2",
-    "puppeteer-core": "^8.0.0",
-    "resemblejs": "^3.2.5"
+    "pixelmatch": "^5.2.1",
+    "pngjs": "^6.0.0",
+    "puppeteer-core": "^8.0.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
-    "@types/resemblejs": "^3.2.0",
     "@types/mime": "^2.0.3",
     "@types/node": "^14.14.9",
+    "@types/pixelmatch": "^5.2.3",
+    "@types/pngjs": "^6.0.0",
+    "@types/resemblejs": "^3.2.0",
     "@typescript-eslint/parser": "^4.8.1",
     "@vercel/ncc": "^0.25.1",
     "eslint": "^7.17.0",
