@@ -76,7 +76,7 @@ function run() {
                 repo,
                 release_id: latest.id,
                 name: `screenshot-${url}.png`,
-                data: latestReleaseScreenshot.toString('binary')
+                data: latestReleaseScreenshot.toString('base64')
             });
             core.info(`Uploaded screenshot as a release asset to v${latestReleaseVersion}. Download url is: ${uploadedAsset.data.browser_download_url}`);
             yield slackMessage_1.default(slackWebhook, latestReleaseVersion, previousReleaseVersion, uploadedAsset.data.browser_download_url, `https://github.com/${owner}/${repo}/releases/download/v${previousReleaseVersion}/screenshot-${url}.png`);
@@ -134,7 +134,7 @@ const axios_1 = __importDefault(__webpack_require__(6545));
 const core = __importStar(__webpack_require__(2186));
 function slackMessage(slackWebhook, latestReleaseVersion, previousReleaseVersion, latestReleaseScreenshot, previousReleaseScreenshot) {
     return __awaiter(this, void 0, void 0, function* () {
-        core.info(`Posting to slack at ${slackWebhook.slice(0, 10)}...`);
+        core.info(`Posting to slack at ${slackWebhook.slice(0, 20)}...`);
         yield axios_1.default.post(slackWebhook, {
             blocks: [
                 {
@@ -143,40 +143,6 @@ function slackMessage(slackWebhook, latestReleaseVersion, previousReleaseVersion
                         type: 'mrkdwn',
                         text: '*Visual Comparison*'
                     }
-                },
-                {
-                    type: 'section',
-                    text: {
-                        type: 'mrkdwn',
-                        text: '*Released Version*'
-                    }
-                },
-                {
-                    type: 'image',
-                    title: {
-                        type: 'plain_text',
-                        text: `v${latestReleaseVersion}`,
-                        emoji: true
-                    },
-                    image_url: latestReleaseScreenshot,
-                    alt_text: `Version ${latestReleaseVersion}`
-                },
-                {
-                    type: 'section',
-                    text: {
-                        type: 'mrkdwn',
-                        text: '*Previous Version*'
-                    }
-                },
-                {
-                    type: 'image',
-                    title: {
-                        type: 'plain_text',
-                        text: `v${previousReleaseVersion}`,
-                        emoji: true
-                    },
-                    image_url: previousReleaseScreenshot,
-                    alt_text: `Version ${previousReleaseVersion}`
                 }
             ]
         });

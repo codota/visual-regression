@@ -38,7 +38,7 @@ async function run(): Promise<void> {
       repo,
       release_id: latest.id,
       name: `screenshot-${url}.png`,
-      data: latestReleaseScreenshot.toString('binary')
+      data: latestReleaseScreenshot.toString('base64')
     })
 
     core.info(
