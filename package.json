@@ -29,10 +29,12 @@
     "@actions/github": "^4.0.0",
     "@slack/webhook": "^6.0.0",
     "mime": "^2.5.2",
-    "puppeteer-core": "^8.0.0"
+    "puppeteer-core": "^8.0.0",
+    "resemblejs": "^3.2.5"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
+    "@types/resemblejs": "^3.2.0",
     "@types/mime": "^2.0.3",
     "@types/node": "^14.14.9",
     "@typescript-eslint/parser": "^4.8.1",

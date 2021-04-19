@@ -1,11 +1,13 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import imageUrl from './imageUrl'
 import slackMessage from './slackMessage'
 import takeScreenshot from './takeScreenshot'
-import {getType} from 'mime'
+import uploadImageToRelease from './uploadImageToRelease'
+import {compareImages} from 'resemblejs'
 import fs from 'fs'
 
-const SCREENSHOT_TEMP_FILE_PATH = 'screenshot.png'
+const SCREENSHOT_FILE_NAME = 'screenshot'
 
 async function run(): Promise<void> {
   try {
@@ -15,60 +17,69 @@ async function run(): Promise<void> {
     const url = core.getInput('url')
     const octokit = github.getOctokit(githubToken)
 
-    core.info(`Running from dir: ${__dirname}`)
-    // await fs.copyFile(
-    //   `${__dirname}/../browsers.json`,
-    //   `${__dirname}/browsers.json`
-    // )
-    // core.info(`Copied file successfully`)
+    const screenshot_file_name = `${SCREENSHOT_FILE_NAME}.png`
 
-    await takeScreenshot(url, SCREENSHOT_TEMP_FILE_PATH)
+    await takeScreenshot(url, screenshot_file_name)
 
-    core.info(`Took screenshot`)
+    core.info(`Fetching releases for ${owner}/${repo}`)
 
     const [latest, previous] = (
       await octokit.repos.listReleases({owner, repo})
     ).data.filter(({draft, prerelease}) => !draft && !prerelease)
 
     const latestReleaseVersion = latest.tag_name.replace('v', '')
-    const previousReleaseVersion = previous.tag_name.replace('v', '')
+    const previousReleaseVersion = previous?.tag_name.replace('v', '')
 
     core.info(
       `Receieved Releases. Latest is ${latestReleaseVersion} and previous is ${previousReleaseVersion}`
     )
 
-    const fileMime =
-      getType(SCREENSHOT_TEMP_FILE_PATH) || 'application/octet-stream'
-    const charset: 'utf-8' | null =
-      fileMime.indexOf('text') > -1 ? 'utf-8' : null
-
-    const headers = {
-      'content-type': fileMime,
-      'content-length': fs.statSync(SCREENSHOT_TEMP_FILE_PATH).size
-    }
-
-    const uploadedAsset = await octokit.repos.uploadReleaseAsset({
-      owner,
-      repo,
+    await uploadImageToRelease({
+      octokit,
       release_id: latest.id,
-      headers,
-      name: `screenshot.png`,
-      data: (fs.readFileSync(
-        SCREENSHOT_TEMP_FILE_PATH,
-        charset
-      ) as unknown) as string
+      name: screenshot_file_name,
+      filepath: screenshot_file_name
     })
 
-    core.info(
-      `Uploaded screenshot as a release asset to v${latestReleaseVersion}. Download url is: ${uploadedAsset.data.browser_download_url}`
+    const latestReleaseScreenshot = imageUrl(
+      latestReleaseVersion,
+      screenshot_file_name
     )
+    const previousReleaseScreenshot = imageUrl(
+      previousReleaseVersion,
+      screenshot_file_name
+    )
+
+    core.info(
+      `Uploaded screenshot as a release asset to v${latestReleaseVersion}. Download url is: ${latestReleaseScreenshot}`
+    )
+
+    core.info(`Creating diff between latest version and previous version`)
+    const diff = await compareImages(
+      fs.readFileSync(latestReleaseScreenshot),
+      fs.readFileSync(previousReleaseScreenshot),
+      {}
+    )
+
+    const diffFileName = `diff-${SCREENSHOT_FILE_NAME}.png`
+
+    core.info(`Writing diff mask as image to ${diffFileName}`)
+    fs.writeFileSync(diffFileName, diff.getBuffer())
+
+    await uploadImageToRelease({
+      octokit,
+      release_id: latest.id,
+      name: diffFileName,
+      filepath: diffFileName
+    })
 
     await slackMessage(
       slackWebhook,
       latestReleaseVersion,
       previousReleaseVersion,
-      uploadedAsset.data.browser_download_url,
-      `https://github.com/${owner}/${repo}/releases/download/v${previousReleaseVersion}/screenshot.png`
+      latestReleaseScreenshot,
+      previousReleaseScreenshot,
+      imageUrl(latestReleaseVersion, diffFileName)
     )
     core.info(`Sent Slack message successfully.`)
   } catch (error) {
