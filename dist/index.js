@@ -52,7 +52,7 @@ const github = __importStar(__webpack_require__(5438));
 const slackMessage_1 = __importDefault(__webpack_require__(9153));
 const takeScreenshot_1 = __importDefault(__webpack_require__(8865));
 const mime_1 = __webpack_require__(9994);
-const promises_1 = __importDefault(__webpack_require__(9225));
+const fs_1 = __importDefault(__webpack_require__(5747));
 const SCREENSHOT_TEMP_FILE_PATH = 'screenshot.png';
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -78,7 +78,7 @@ function run() {
             const charset = fileMime.indexOf('text') > -1 ? 'utf-8' : null;
             const headers = {
                 'content-type': fileMime,
-                'content-length': (yield promises_1.default.stat(SCREENSHOT_TEMP_FILE_PATH)).size
+                'content-length': fs_1.default.statSync(SCREENSHOT_TEMP_FILE_PATH).size
             };
             const uploadedAsset = yield octokit.repos.uploadReleaseAsset({
                 owner,
@@ -86,7 +86,7 @@ function run() {
                 release_id: latest.id,
                 headers,
                 name: `screenshot.png`,
-                data: (yield promises_1.default.readFile(SCREENSHOT_TEMP_FILE_PATH, charset))
+                data: fs_1.default.readFileSync(SCREENSHOT_TEMP_FILE_PATH, charset)
             });
             core.info(`Uploaded screenshot as a release asset to v${latestReleaseVersion}. Download url is: ${uploadedAsset.data.browser_download_url}`);
             yield slackMessage_1.default(slackWebhook, latestReleaseVersion, previousReleaseVersion, uploadedAsset.data.browser_download_url, `https://github.com/${owner}/${repo}/releases/download/v${previousReleaseVersion}/screenshot.png`);
@@ -39235,14 +39235,6 @@ module.exports = require("events");;
 
 "use strict";
 module.exports = require("fs");;
-
-/***/ }),
-
-/***/ 9225:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("fs/promises");;
 
 /***/ }),
 

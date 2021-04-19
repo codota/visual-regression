@@ -3,7 +3,7 @@ import * as github from '@actions/github'
 import slackMessage from './slackMessage'
 import takeScreenshot from './takeScreenshot'
 import {getType} from 'mime'
-import fs from 'fs/promises'
+import fs from 'fs'
 
 const SCREENSHOT_TEMP_FILE_PATH = 'screenshot.png'
 
@@ -44,7 +44,7 @@ async function run(): Promise<void> {
 
     const headers = {
       'content-type': fileMime,
-      'content-length': (await fs.stat(SCREENSHOT_TEMP_FILE_PATH)).size
+      'content-length': fs.statSync(SCREENSHOT_TEMP_FILE_PATH).size
     }
 
     const uploadedAsset = await octokit.repos.uploadReleaseAsset({
@@ -53,10 +53,10 @@ async function run(): Promise<void> {
       release_id: latest.id,
       headers,
       name: `screenshot.png`,
-      data: ((await fs.readFile(
+      data: (fs.readFileSync(
         SCREENSHOT_TEMP_FILE_PATH,
         charset
-      )) as unknown) as string
+      ) as unknown) as string
     })
 
     core.info(
