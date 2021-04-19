@@ -138,11 +138,9 @@ function findLatestReleases(octokit) {
     return __awaiter(this, void 0, void 0, function* () {
         const { owner, repo } = github.context.repo;
         const [latest, previous] = (yield octokit.repos.listReleases({ owner, repo })).data.filter(({ draft, prerelease }) => !draft && !prerelease);
-        const latestReleaseVersion = latest.tag_name.replace('v', '');
-        const previousReleaseVersion = previous === null || previous === void 0 ? void 0 : previous.tag_name.replace('v', '');
         return {
-            latestReleaseVersion,
-            previousReleaseVersion,
+            latestReleaseVersion: latest.tag_name,
+            previousReleaseVersion: previous === null || previous === void 0 ? void 0 : previous.tag_name,
             latestReleaseId: latest.id
         };
     });
@@ -178,9 +176,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const github = __importStar(__webpack_require__(5438));
-function imageUrl(version, filename) {
+function imageUrl(tag, filename) {
     const { owner, repo } = github.context.repo;
-    return `https://github.com/${owner}/${repo}/releases/download/${version}/${filename}`;
+    return `https://github.com/${owner}/${repo}/releases/download/${tag}/${filename}`;
 }
 exports.default = imageUrl;
 
@@ -324,7 +322,7 @@ function slackMessage(slackWebhook, latestReleaseVersion, previousReleaseVersion
                     type: 'section',
                     text: {
                         type: 'mrkdwn',
-                        text: `# Visual Comparison v${latestReleaseVersion}`
+                        text: `# Visual Comparison ${latestReleaseVersion}`
                     }
                 },
                 {
@@ -338,11 +336,11 @@ function slackMessage(slackWebhook, latestReleaseVersion, previousReleaseVersion
                     type: 'image',
                     title: {
                         type: 'plain_text',
-                        text: `v${latestReleaseVersion}`,
+                        text: `Tag ${latestReleaseVersion}`,
                         emoji: true
                     },
                     image_url: imageUrl_1.default(latestReleaseVersion, screenshotFileName),
-                    alt_text: `Version ${latestReleaseVersion}`
+                    alt_text: `Tag ${latestReleaseVersion}`
                 },
                 {
                     type: 'section',
@@ -355,11 +353,11 @@ function slackMessage(slackWebhook, latestReleaseVersion, previousReleaseVersion
                     type: 'image',
                     title: {
                         type: 'plain_text',
-                        text: `v${previousReleaseVersion}`,
+                        text: `Tag ${previousReleaseVersion}`,
                         emoji: true
                     },
                     image_url: imageUrl_1.default(previousReleaseVersion, screenshotFileName),
-                    alt_text: `Version ${previousReleaseVersion}`
+                    alt_text: `Tag ${previousReleaseVersion}`
                 },
                 {
                     type: 'section',

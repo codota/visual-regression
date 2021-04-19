@@ -18,7 +18,7 @@ export default async function slackMessage(
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `# Visual Comparison v${latestReleaseVersion}`
+          text: `# Visual Comparison ${latestReleaseVersion}`
         }
       },
       {
@@ -32,11 +32,11 @@ export default async function slackMessage(
         type: 'image',
         title: {
           type: 'plain_text',
-          text: `v${latestReleaseVersion}`,
+          text: `Tag ${latestReleaseVersion}`,
           emoji: true
         },
         image_url: imageUrl(latestReleaseVersion, screenshotFileName),
-        alt_text: `Version ${latestReleaseVersion}`
+        alt_text: `Tag ${latestReleaseVersion}`
       },
       {
         type: 'section',
@@ -49,11 +49,11 @@ export default async function slackMessage(
         type: 'image',
         title: {
           type: 'plain_text',
-          text: `v${previousReleaseVersion}`,
+          text: `Tag ${previousReleaseVersion}`,
           emoji: true
         },
         image_url: imageUrl(previousReleaseVersion, screenshotFileName),
-        alt_text: `Version ${previousReleaseVersion}`
+        alt_text: `Tag ${previousReleaseVersion}`
       },
       {
         type: 'section',

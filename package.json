@@ -5,6 +5,7 @@
   "description": "TypeScript template action",
   "main": "lib/main.js",
   "scripts": {
+    "prepare": "husky install",
     "build": "tsc",
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
@@ -29,6 +30,7 @@
     "@actions/github": "^4.0.0",
     "@slack/webhook": "^6.0.0",
     "axios": "^0.21.1",
+    "husky": "^6.0.0",
     "mime": "^2.5.2",
     "pixelmatch": "^5.2.1",
     "pngjs": "^6.0.0",

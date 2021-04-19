@@ -15,15 +15,9 @@ export default async function findLatestReleases(
     await octokit.repos.listReleases({owner, repo})
   ).data.filter(({draft, prerelease}) => !draft && !prerelease)
 
-  const latestReleaseVersion = latest.tag_name.replace('v', '')
-  const previousReleaseVersion: string | undefined = previous?.tag_name.replace(
-    'v',
-    ''
-  )
-
   return {
-    latestReleaseVersion,
-    previousReleaseVersion,
+    latestReleaseVersion: latest.tag_name,
+    previousReleaseVersion: previous?.tag_name as string | undefined,
     latestReleaseId: latest.id
   }
 }
