@@ -2,7 +2,6 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import slackMessage from './slackMessage'
 import takeScreenshot from './takeScreenshot'
-import fs from 'fs/promises'
 
 async function run(): Promise<void> {
   try {
