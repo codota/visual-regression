@@ -11,7 +11,7 @@ async function run(): Promise<void> {
     const url = core.getInput('url')
     const octokit = github.getOctokit(githubToken)
 
-    core.info(`__dirname: ${__dirname}`)
+    core.info(`Running from dir: ${__dirname}`)
     // await fs.copyFile(
     //   `${__dirname}/../browsers.json`,
     //   `${__dirname}/browsers.json`

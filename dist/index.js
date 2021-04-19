@@ -59,16 +59,18 @@ function run() {
             const githubToken = core.getInput('githubToken');
             const url = core.getInput('url');
             const octokit = github.getOctokit(githubToken);
-            core.info(`__dirname: ${__dirname}`);
+            core.info(`Running from dir: ${__dirname}`);
             // await fs.copyFile(
             //   `${__dirname}/../browsers.json`,
             //   `${__dirname}/browsers.json`
             // )
             // core.info(`Copied file successfully`)
             const latestReleaseScreenshot = yield takeScreenshot_1.default(url);
+            core.info(`Took screenshot`);
             const [latest, previous] = (yield octokit.repos.listReleases({ owner, repo })).data.filter(({ draft, prerelease }) => !draft && !prerelease);
             const latestReleaseVersion = latest.tag_name.replace('v', '');
             const previousReleaseVersion = previous.tag_name.replace('v', '');
+            core.info(`Receieved Releases. Latest is ${latestReleaseVersion} and previous is ${previousReleaseVersion}`);
             yield octokit.repos.uploadReleaseAsset({
                 owner,
                 repo,
@@ -76,7 +78,9 @@ function run() {
                 name: `screenshot-${url}.png`,
                 data: latestReleaseScreenshot.toString()
             });
+            core.info(`Uploaded screenshot as a release asset to v${latestReleaseVersion}`);
             yield slackMessage_1.default(slackWebhook, latestReleaseVersion, previousReleaseVersion, `https://github.com/${owner}/${repo}/releases/download/v${latestReleaseVersion}/screenshot-${url}.png`, `https://github.com/${owner}/${repo}/releases/download/v${previousReleaseVersion}/screenshot-${url}.png`);
+            core.info(`Sent Slack message successfully.`);
         }
         catch (error) {
             core.setFailed(error.message);
@@ -164,6 +168,25 @@ exports.default = slackMessage;
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -177,15 +200,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__webpack_require__(2186));
 const os_1 = __importDefault(__webpack_require__(2087));
 const path_1 = __importDefault(__webpack_require__(5622));
 const puppeteer_core_1 = __importDefault(__webpack_require__(3435));
 function takeScreenshot(url) {
     return __awaiter(this, void 0, void 0, function* () {
+        core.info(`Taking screenshot of ${url}. Starting by launching Puppeteer.`);
         const browser = yield puppeteer_core_1.default.launch({ executablePath: getChromePath() });
+        core.info(`New Page.`);
         const page = yield browser.newPage();
+        core.info(`Launched Puppeteer, goto ${url}`);
         yield page.goto(url);
+        core.info(`Taking screenshot..`);
         const content = yield page.screenshot({ fullPage: true });
+        core.info(`Took screenshot, closing broswer`);
         yield browser.close();
         return content;
     });

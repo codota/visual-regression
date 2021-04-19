@@ -4,12 +4,16 @@ import path from 'path'
 import puppeteer from 'puppeteer-core'
 
 export default async function takeScreenshot(url: string): Promise<Buffer> {
+  core.info(`Taking screenshot of ${url}. Starting by launching Puppeteer.`)
+
   const browser = await puppeteer.launch({executablePath: getChromePath()})
+  core.info(`New Page.`)
   const page = await browser.newPage()
 
   core.info(`Launched Puppeteer, goto ${url}`)
   await page.goto(url)
 
+  core.info(`Taking screenshot..`)
   const content = await page.screenshot({fullPage: true})
 
   core.info(`Took screenshot, closing broswer`)
