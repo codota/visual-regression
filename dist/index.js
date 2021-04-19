@@ -75,11 +75,12 @@ function run() {
                 owner,
                 repo,
                 release_id: latest.id,
-                name: `screenshot-${url}.png`,
-                data: latestReleaseScreenshot.toString('base64')
+                name: `screenshot.png`,
+                data: 'placeholder',
+                file: latestReleaseScreenshot
             });
             core.info(`Uploaded screenshot as a release asset to v${latestReleaseVersion}. Download url is: ${uploadedAsset.data.browser_download_url}`);
-            yield slackMessage_1.default(slackWebhook, latestReleaseVersion, previousReleaseVersion, uploadedAsset.data.browser_download_url, `https://github.com/${owner}/${repo}/releases/download/v${previousReleaseVersion}/screenshot-${url}.png`);
+            yield slackMessage_1.default(slackWebhook, latestReleaseVersion, previousReleaseVersion, uploadedAsset.data.browser_download_url, `https://github.com/${owner}/${repo}/releases/download/v${previousReleaseVersion}/screenshot.png`);
             core.info(`Sent Slack message successfully.`);
         }
         catch (error) {
@@ -125,28 +126,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const webhook_1 = __webpack_require__(1095);
-const axios_1 = __importDefault(__webpack_require__(6545));
 const core = __importStar(__webpack_require__(2186));
+const webhook_1 = __webpack_require__(1095);
 function slackMessage(slackWebhook, latestReleaseVersion, previousReleaseVersion, latestReleaseScreenshot, previousReleaseScreenshot) {
     return __awaiter(this, void 0, void 0, function* () {
-        core.info(`Posting to slack at ${slackWebhook.slice(0, 20)}...`);
-        yield axios_1.default.post(slackWebhook, {
-            blocks: [
-                {
-                    type: 'section',
-                    text: {
-                        type: 'mrkdwn',
-                        text: '*Visual Comparison*'
-                    }
-                }
-            ]
-        });
-        core.info(`Creating IncomingWebhook`);
         const webhook = new webhook_1.IncomingWebhook(slackWebhook);
         core.info(`Posting to slack using IncomingWebhook`);
         yield webhook.send({
@@ -155,7 +139,7 @@ function slackMessage(slackWebhook, latestReleaseVersion, previousReleaseVersion
                     type: 'section',
                     text: {
                         type: 'mrkdwn',
-                        text: '*Visual Comparison*'
+                        text: `# Visual Comparison v${latestReleaseVersion}`
                     }
                 },
                 {
@@ -172,7 +156,8 @@ function slackMessage(slackWebhook, latestReleaseVersion, previousReleaseVersion
                         text: `v${latestReleaseVersion}`,
                         emoji: true
                     },
-                    image_url: latestReleaseScreenshot,
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Fuyu_Persimmon_%28Diospyros_Kaki%29.jpg/1200px-Fuyu_Persimmon_%28Diospyros_Kaki%29.jpg',
+                    // image_url: latestReleaseScreenshot,
                     alt_text: `Version ${latestReleaseVersion}`
                 },
                 {
@@ -181,17 +166,17 @@ function slackMessage(slackWebhook, latestReleaseVersion, previousReleaseVersion
                         type: 'mrkdwn',
                         text: '*Previous Version*'
                     }
-                },
-                {
-                    type: 'image',
-                    title: {
-                        type: 'plain_text',
-                        text: `v${previousReleaseVersion}`,
-                        emoji: true
-                    },
-                    image_url: previousReleaseScreenshot,
-                    alt_text: `Version ${previousReleaseVersion}`
                 }
+                // {
+                //   type: 'image',
+                //   title: {
+                //     type: 'plain_text',
+                //     text: `v${previousReleaseVersion}`,
+                //     emoji: true
+                //   },
+                //   image_url: previousReleaseScreenshot,
+                //   alt_text: `Version ${previousReleaseVersion}`
+                // }
             ]
         });
     });

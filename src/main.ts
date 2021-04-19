@@ -37,8 +37,9 @@ async function run(): Promise<void> {
       owner,
       repo,
       release_id: latest.id,
-      name: `screenshot-${url}.png`,
-      data: latestReleaseScreenshot.toString('base64')
+      name: `screenshot.png`,
+      data: 'placeholder',
+      file: latestReleaseScreenshot
     })
 
     core.info(
@@ -50,7 +51,7 @@ async function run(): Promise<void> {
       latestReleaseVersion,
       previousReleaseVersion,
       uploadedAsset.data.browser_download_url,
-      `https://github.com/${owner}/${repo}/releases/download/v${previousReleaseVersion}/screenshot-${url}.png`
+      `https://github.com/${owner}/${repo}/releases/download/v${previousReleaseVersion}/screenshot.png`
     )
     core.info(`Sent Slack message successfully.`)
   } catch (error) {

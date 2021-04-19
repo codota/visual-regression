@@ -1,6 +1,5 @@
-import {IncomingWebhook} from '@slack/webhook'
-import axios from 'axios'
 import * as core from '@actions/core'
+import {IncomingWebhook} from '@slack/webhook'
 
 export default async function slackMessage(
   slackWebhook: string,
@@ -9,20 +8,6 @@ export default async function slackMessage(
   latestReleaseScreenshot: string,
   previousReleaseScreenshot: string
 ): Promise<void> {
-  core.info(`Posting to slack at ${slackWebhook.slice(0, 20)}...`)
-  await axios.post(slackWebhook, {
-    blocks: [
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: '*Visual Comparison*'
-        }
-      }
-    ]
-  })
-
-  core.info(`Creating IncomingWebhook`)
   const webhook = new IncomingWebhook(slackWebhook)
 
   core.info(`Posting to slack using IncomingWebhook`)
@@ -32,7 +17,7 @@ export default async function slackMessage(
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: '*Visual Comparison*'
+          text: `# Visual Comparison v${latestReleaseVersion}`
         }
       },
       {
@@ -49,7 +34,9 @@ export default async function slackMessage(
           text: `v${latestReleaseVersion}`,
           emoji: true
         },
-        image_url: latestReleaseScreenshot,
+        image_url:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Fuyu_Persimmon_%28Diospyros_Kaki%29.jpg/1200px-Fuyu_Persimmon_%28Diospyros_Kaki%29.jpg',
+        // image_url: latestReleaseScreenshot,
         alt_text: `Version ${latestReleaseVersion}`
       },
       {
@@ -58,17 +45,17 @@ export default async function slackMessage(
           type: 'mrkdwn',
           text: '*Previous Version*'
         }
-      },
-      {
-        type: 'image',
-        title: {
-          type: 'plain_text',
-          text: `v${previousReleaseVersion}`,
-          emoji: true
-        },
-        image_url: previousReleaseScreenshot,
-        alt_text: `Version ${previousReleaseVersion}`
       }
+      // {
+      //   type: 'image',
+      //   title: {
+      //     type: 'plain_text',
+      //     text: `v${previousReleaseVersion}`,
+      //     emoji: true
+      //   },
+      //   image_url: previousReleaseScreenshot,
+      //   alt_text: `Version ${previousReleaseVersion}`
+      // }
     ]
   })
 }
