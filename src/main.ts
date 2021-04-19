@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import github from '@actions/github'
+import * as github from '@actions/github'
 import slackMessage from './slackMessage'
 import takeScreenshot from './takeScreenshot'
 import fs from 'fs/promises'

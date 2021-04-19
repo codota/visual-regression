@@ -48,17 +48,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__webpack_require__(2186));
-const github_1 = __importDefault(__webpack_require__(5438));
+const github = __importStar(__webpack_require__(5438));
 const slackMessage_1 = __importDefault(__webpack_require__(9153));
 const takeScreenshot_1 = __importDefault(__webpack_require__(8865));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { owner, repo } = github_1.default.context.repo;
+            const { owner, repo } = github.context.repo;
             const slackWebhook = core.getInput('slackWebhook');
             const githubToken = core.getInput('githubToken');
             const url = core.getInput('url');
-            const octokit = github_1.default.getOctokit(githubToken);
+            const octokit = github.getOctokit(githubToken);
             core.info(`__dirname: ${__dirname}`);
             // await fs.copyFile(
             //   `${__dirname}/../browsers.json`,
