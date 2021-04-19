@@ -165,8 +165,7 @@ function slackMessage(slackWebhook, latestReleaseVersion, previousReleaseVersion
                         text: `v${latestReleaseVersion}`,
                         emoji: true
                     },
-                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Fuyu_Persimmon_%28Diospyros_Kaki%29.jpg/1200px-Fuyu_Persimmon_%28Diospyros_Kaki%29.jpg',
-                    // image_url: latestReleaseScreenshot,
+                    image_url: latestReleaseScreenshot,
                     alt_text: `Version ${latestReleaseVersion}`
                 },
                 {
