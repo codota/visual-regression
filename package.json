@@ -34,7 +34,7 @@
     "mime": "^2.5.2",
     "pixelmatch": "^5.2.1",
     "pngjs": "^6.0.0",
-    "puppeteer-core": "^8.0.0"
+    "puppeteer-core": "^9.0.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
